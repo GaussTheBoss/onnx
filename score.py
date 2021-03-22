@@ -23,7 +23,7 @@ def action(data):
     
     print(type(data), flush=True)
     
-    data = pd.DataFrame(data)
+    data = pd.DataFrame(data, index=[0])
 
     print(data, flush=True)
 
