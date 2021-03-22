@@ -20,10 +20,16 @@ def begin():
 
 # modelop.score
 def action(data):
+    
+    print(type(data), flush=True)
+    
+    data = pd.DataFrame(data)
+
+    print(data, flush=True)
 
     data = np.array(data)
 
-    print(data)
+    print(data, flush=True)
 
     pred_onnx = sess.run(
         [label_name], 
