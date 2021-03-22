@@ -9,7 +9,7 @@ import pandas as pd
 
 # modelop.init
 def begin():
-    
+
     global sess, input_name, label_name
     
     sess = rt.InferenceSession("rf_iris.onnx")
@@ -22,6 +22,8 @@ def begin():
 def action(data):
 
     data = np.array(data)
+
+    print(data)
 
     pred_onnx = sess.run(
         [label_name], 
