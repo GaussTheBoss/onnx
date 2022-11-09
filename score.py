@@ -1,5 +1,6 @@
-# modelop.slot.0: in-use
+# modelop.schema.0: input_schema.avsc
 # modelop.slot.1: in-use
+# modelop.recordsets.0: true
 
 
 import onnxruntime as rt
@@ -19,8 +20,6 @@ def begin():
     input_name = sess.get_inputs()[0].name
     label_name = sess.get_outputs()[0].name
 
-    pass
-
 
 # modelop.score
 def action(data):
@@ -31,8 +30,7 @@ def action(data):
     return: predictions (as an array of dictionaries)
     """
 
-    # load data as a DataFrame, exract features into np.array
-    data = pd.DataFrame(data, index=[0])
+    # Input data is a DataFrame; exract features into np.array
     data = np.array(data)
 
     # Compute predictions using trained Classifier
@@ -47,4 +45,11 @@ def action(data):
     out_df['prediction'] = pred_onnx
     
     # Output results as a JSON-serializable object (array of records/dicts)
-    yield out_df.to_dict(orient='records')
+    return out_df.to_dict(orient='records')
+
+
+# Test Script
+if __name__=='__main__':
+    begin()
+    input_data = pd.read_csv('score_input_data.csv')
+    print(action(input_data))

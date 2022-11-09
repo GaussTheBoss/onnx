@@ -1,0 +1,22 @@
+{
+   "type": "record",
+   "name": "input_schema",
+   "fields": [
+      {
+         "name": "x1",
+         "type": "double"
+      },
+      {
+         "name": "x2",
+         "type": "double"
+      },
+      {
+         "name": "x3",
+         "type": "double"
+      },
+      {
+         "name": "x4",
+         "type": "double"
+      }
+   ]
+}
