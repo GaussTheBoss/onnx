@@ -1,55 +1,57 @@
-# modelop.schema.0: input_schema.avsc
-# modelop.slot.1: in-use
-# modelop.recordsets.0: true
-
+from sys import argv
 
 import onnxruntime as rt
-import numpy as np
-import pandas as pd
+import numpy
+import pandas
 
 
-# modelop.init
 def begin():
     """
     A function to load trained model globally for inference in action function
     """
     global sess, input_name, label_name
-    
+
     # Start an Inference Session by loading trained model in .onnx format
     sess = rt.InferenceSession("rf_iris.onnx")
     input_name = sess.get_inputs()[0].name
     label_name = sess.get_outputs()[0].name
 
 
-# modelop.score
-def action(data):
+def predict(data: pandas.DataFrame) -> pandas.DataFrame:
     """
     A function to score input data (real-time inferences)
 
-    param: data: input data in CSV format - headers ignored
-    return: predictions (as an array of dictionaries)
+    Args:
+        data (pandas.DataFrame): Input data to be scored.
+
+    Returns:
+        (pandas.DataFrame): Predictions.
     """
 
     # Input data is a DataFrame; exract features into np.array
-    data = np.array(data)
+    data = numpy.array(data)
 
     # Compute predictions using trained Classifier
-    pred_onnx = sess.run(
-        [label_name], 
-        {input_name: data.astype(np.float32)}
-    )[0]
+    pred_onnx = sess.run([label_name], {input_name: data.astype(numpy.float32)})[0]
 
     # Assign predictions to a DataFrame with id column
-    out_df = pd.DataFrame(columns=['id','prediction'])
-    out_df['id'] = range(len(data))
-    out_df['prediction'] = pred_onnx
-    
-    # Output results as a JSON-serializable object (array of records/dicts)
-    return out_df.to_dict(orient='records')
+    output_df = pandas.DataFrame(columns=["id", "prediction"])
+    output_df["id"] = range(len(data))
+    output_df["prediction"] = pred_onnx
+
+    return output_df
 
 
-# Test Script
-if __name__=='__main__':
+if __name__ == "__main__":
+    # Sample Usage from Command Line:
+    # python3 score.py ./data/input_data.csv ./data/output_data.csv
+
+    # Load pretrained model
     begin()
-    input_data = pd.read_csv('score_input_data.csv')
-    print(action(input_data))
+
+    # Read input file
+    input_data = pandas.read_csv(argv[1])  # argv[1] is input file path
+    # Predict
+    scores = predict(input_data)
+    # Write to output file
+    scores.to_csv(argv[2], index=False)  # argv[2] is output file path
